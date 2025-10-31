@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulasi Berburu dengan Sumpit Kalimantan</title>
+    <style>
+        :root {
+            --primary: #2d5016;
+            --secondary: #8db596;
+            --accent: #e74c3c;
+            --light: #f5f9f7;
+            --dark: #1a3310;
+            --success: #27ae60;
+            --wood: #8b4513;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #ffffff;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .content {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .control-panel {
+            flex: 1;
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 2px solid var(--secondary);
+        }
+        
+        .simulation-area {
+            flex: 2;
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+            border: 2px solid var(--secondary);
+        }
+        
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--secondary);
+        }
+        
+        .card-title {
+            color: var(--primary);
+            border-bottom: 2px solid var(--secondary);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+        
+        .btn {
+            display: inline-block;
+            background-color: var(--primary);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        
+        .btn:hover {
+            background-color: var(--dark);
+            transform: translateY(-2px);
+        }
+        
+        .btn-accent {
+            background-color: var(--accent);
+        }
+        
+        .btn-accent:hover {
+            background-color: #c0392b;
+        }
+        
+        .btn-success {
+            background-color: var(--success);
+        }
+        
+        .btn-success:hover {
+            background-color: #219653;
+        }
+        
+        .input-group {
+            margin-bottom: 1rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .slider-value {
+            min-width: 50px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .result-card {
+            background: var(--light);
+            border-radius: 10px;
+            padding: 1rem;
+            text-align: center;
+            border: 1px solid var(--secondary);
+        }
+        
+        .result-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 0.5rem 0;
+        }
+        
+        .result-label {
+            font-size: 0.9rem;
+            color: var(--dark);
+            opacity: 0.8;
+        }
+        
+        canvas {
+            display: block;
+            background-color: #ffffff;
+            border-radius: 5px;
+            margin-top: 1rem;
+            border: 1px solid var(--secondary);
+        }
+        
+        .animal-selector {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .animal-option {
+            flex: 1;
+            text-align: center;
+            padding: 0.5rem;
+            border: 2px solid transparent;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .animal-option:hover {
+            border-color: var(--secondary);
+        }
+        
+        .animal-option.selected {
+            border-color: var(--primary);
+            background-color: var(--light);
+        }
+        
+        .animal-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: 2rem;
+            border-top: 1px solid var(--secondary);
+            color: var(--dark);
+        }
+        
+        @media (max-width: 768px) {
+            .content {
+                flex-direction: column;
+            }
+        }
+        
+        .hunter-info {
+            background: var(--wood);
+            color: white;
+            padding: 1rem;
+            border-radius: 5px;
+            margin-top: 1rem;
+        }
+        
+        .cultural-note {
+            background: var(--light);
+            padding: 1rem;
+            border-radius: 5px;
+            border-left: 4px solid var(--primary);
+            margin-top: 1rem;
+        }
+        
+        .trajectory-preview {
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            border: 1px dashed var(--secondary);
+        }
+        
+        .distance-indicator {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-weight: bold;
+            border: 1px solid var(--secondary);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Simulasi Berburu dengan Sumpit Kalimantan</h1>
+            <p class="subtitle">Eksplorasi Teknik Berburu Tradisional Masyarakat Dayak</p>
+        </header>
+        
+        <div class="content">
+            <div class="control-panel">
+                <h2 class="card-title">Kontrol Berburu</h2>
+                
+                <div class="input-group">
+                    <label for="target-distance">Jarak Hewan Target (meter)</label>
+                    <div class="slider-container">
+                        <input type="range" id="target-distance" min="5" max="50" value="20" step="1">
+                        <span class="slider-value" id="target-distance-value">20</span>
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <label for="velocity">Kecepatan Sumpit (m/s)</label>
+                    <div class="slider-container">
+                        <input type="range" id="velocity" min="10" max="40" value="25" step="1">
+                        <span class="slider-value" id="velocity-value">25</span>
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <label for="angle">Sudut Tembakan (derajat)</label>
+                    <div class="slider-container">
+                        <input type="range" id="angle" min="0" max="90" value="30" step="1">
+                        <span class="slider-value" id="angle-value">30</span>
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <label for="animal-type">Jenis Hewan Buruan</label>
+                    <div class="animal-selector">
+                        <div class="animal-option selected" data-animal="rusa">
+                            <div class="animal-icon">🦌</div>
+                            <div>Rusa</div>
+                        </div>
+                        <div class="animal-option" data-animal="babi">
+                            <div class="animal-icon">🐗</div>
+                            <div>Babi Hutan</div>
+                        </div>
+                        <div class="animal-option" data-animal="monyet">
+                            <div class="animal-icon">🐒</div>
+                            <div>Monyet</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="trajectory-preview">
+                    <h3>Pratinjau Lintasan</h3>
+                    <p>Ubah sudut dan kecepatan untuk melihat lintasan yang akan ditempuh anak sumpit</p>
+                </div>
+                
+                <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                    <button class="btn" id="start-btn">Tembak Sumpit!</button>
+                    <button class="btn btn-accent" id="reset-btn">Ulangi</button>
+                </div>
+                
+                <div class="results-grid">
+                    <div class="result-card">
+                        <div class="result-label">Status Tembakan</div>
+                        <div class="result-value" id="shot-status">-</div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-label">Titik Tertinggi</div>
+                        <div class="result-value" id="max-height">0 m</div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-label">Waktu Tempuh</div>
+                        <div class="result-value" id="flight-time">0 s</div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-label">Kecepatan Saat Ini</div>
+                        <div class="result-value" id="current-velocity">0 m/s</div>
+                    </div>
+                </div>
+                
+                <div class="hunter-info">
+                    <h3>Keterangan:</h3>
+                    <p>Atur jarak hewan target menggunakan slider, lalu tentukan kecepatan dan sudut tembakan sumpit untuk membidik dengan tepat!</p>
+                </div>
+            </div>
+            
+            <div class="simulation-area">
+                <h2 class="card-title">Simulasi Berburu</h2>
+                <div class="distance-indicator" id="distance-indicator">Jarak: 20 m</div>
+                <canvas id="simulation-canvas" width="600" height="400"></canvas>
+                
+                <div class="cultural-note">
+                    <h3>Fakta Budaya:</h3>
+                    <p>Sumpit (blowpipe) adalah senjata tradisional khas masyarakat Dayak di Kalimantan Tengah yang digunakan untuk berburu. Sumpit dilengkapi dengan anak sumpit yang sering diolesi racun dari getah pohon untuk meningkatkan efektivitasnya.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2 class="card-title">Teknik Berburu dengan Sumpit</h2>
+            <p>Berburu dengan sumpit memerlukan pemahaman tentang fisika gerak parabola. Berikut adalah prinsip-prinsipnya:</p>
+            
+            <div style="margin: 1rem 0;">
+                <p><strong>Posisi horizontal:</strong> x(t) = V₀ · cos(θ) · t</p>
+                <p><strong>Posisi vertikal:</strong> y(t) = V₀ · sin(θ) · t - ½ · g · t²</p>
+                <p><strong>Kecepatan horizontal:</strong> Vx(t) = V₀ · cos(θ)</p>
+                <p><strong>Kecepatan vertikal:</strong> Vy(t) = V₀ · sin(θ) - g · t</p>
+            </div>
+            
+            <p>Dengan:</p>
+            <ul style="margin-left: 1.5rem;">
+                <li>V₀ = Kecepatan awal sumpit (m/s)</li>
+                <li>θ = Sudut tembakan (derajat)</li>
+                <li>g = Percepatan gravitasi (9.8 m/s²)</li>
+                <li>t = Waktu (s)</li>
+            </ul>
+        </div>
+        
+        <footer>
+            <p>Simulasi Berburu dengan Sumpit Kalimantan - Melestarikan Kearifan Lokal Masyarakat Dayak</p>
+            <p>Digunakan untuk pembelajaran fisika dan budaya Indonesia</p>
+        </footer>
+    </div>
+
+    <script>
+        // DOM Elements
+        const targetDistanceSlider = document.getElementById('target-distance');
+        const targetDistanceValue = document.getElementById('target-distance-value');
+        const velocitySlider = document.getElementById('velocity');
+        const velocityValue = document.getElementById('velocity-value');
+        const angleSlider = document.getElementById('angle');
+        const angleValue = document.getElementById('angle-value');
+        const animalOptions = document.querySelectorAll('.animal-option');
+        const startBtn = document.getElementById('start-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const distanceIndicator = document.getElementById('distance-indicator');
+        
+        const shotStatusElem = document.getElementById('shot-status');
+        const maxHeightElem = document.getElementById('max-height');
+        const flightTimeElem = document.getElementById('flight-time');
+        const currentVelocityElem = document.getElementById('current-velocity');
+        
+        const canvas = document.getElementById('simulation-canvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Simulation variables
+        let animationId;
+        let isRunning = false;
+        let startTime;
+        let currentTime = 0;
+        let trajectoryPoints = [];
+        let selectedAnimal = 'rusa';
+        let hitTarget = false;
+        
+        // Hunter properties
+        const hunterHeight = 1.6; // meters (more realistic height)
+        const blowpipeLength = 1.2; // meters
+        
+        // Canvas dimensions and scale
+        const canvasWidth = canvas.width;
+        const canvasHeight = canvas.height;
+        const groundLevel = canvasHeight - 40;
+        
+        // Calculate scale factors
+        const maxDistance = 50; // Maximum distance in meters
+        const scaleX = (canvasWidth - 100) / maxDistance; // Leave 50px margin on each side
+        const scaleY = (canvasHeight - 60) / 20; // 20 meters high, with 40px ground and 20px top margin
+        
+        // Animal properties
+        const animalProperties = {
+            rusa: { size: 1.2, speed: 5, color: '#8B4513' },
+            babi: { size: 0.9, speed: 3, color: '#654321' },
+            monyet: { size: 0.7, speed: 7, color: '#A0522D' }
+        };
+        
+        // Update slider values display
+        targetDistanceSlider.addEventListener('input', () => {
+            const value = targetDistanceSlider.value;
+            targetDistanceValue.textContent = value;
+            distanceIndicator.textContent = `Jarak: ${value} m`;
+            drawStaticElements();
+        });
+        
+        velocitySlider.addEventListener('input', () => {
+            velocityValue.textContent = velocitySlider.value;
+            drawStaticElements();
+        });
+        
+        angleSlider.addEventListener('input', () => {
+            angleValue.textContent = angleSlider.value;
+            drawStaticElements();
+        });
+        
+        // Animal selection
+        animalOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                animalOptions.forEach(opt => opt.classList.remove('selected'));
+                option.classList.add('selected');
+                selectedAnimal = option.getAttribute('data-animal');
+                drawStaticElements();
+            });
+        });
+        
+        // Start simulation
+        startBtn.addEventListener('click', () => {
+            if (isRunning) {
+                pauseSimulation();
+                startBtn.textContent = 'Lanjutkan';
+            } else {
+                startSimulation();
+                startBtn.textContent = 'Jeda Tembakan';
+            }
+        });
+        
+        // Reset simulation
+        resetBtn.addEventListener('click', () => {
+            resetSimulation();
+            startBtn.textContent = 'Tembak Sumpit!';
+        });
+        
+        // Initialize simulation
+        function initSimulation() {
+            resetSimulation();
+            drawStaticElements();
+        }
+        
+        // Start simulation
+        function startSimulation() {
+            if (!isRunning) {
+                isRunning = true;
+                hitTarget = false;
+                startTime = performance.now() - (currentTime * 1000);
+                trajectoryPoints = [];
+                animate();
+            }
+        }
+        
+        // Pause simulation
+        function pauseSimulation() {
+            isRunning = false;
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+            }
+        }
+        
+        // Reset simulation
+        function resetSimulation() {
+            isRunning = false;
+            hitTarget = false;
+            currentTime = 0;
+            trajectoryPoints = [];
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+            }
+            drawStaticElements();
+            updateResults(0, 0, '-');
+        }
+        
+        // Animation loop
+        function animate() {
+            if (!isRunning) return;
+            
+            const currentTimestamp = performance.now();
+            currentTime = (currentTimestamp - startTime) / 1000;
+            
+            // Get simulation parameters
+            const v0 = parseFloat(velocitySlider.value);
+            const angle = parseFloat(angleSlider.value) * Math.PI / 180;
+            const g = 9.8;
+            const targetDistance = parseFloat(targetDistanceSlider.value);
+            
+            // Calculate current position
+            const x = v0 * Math.cos(angle) * currentTime;
+            const y = hunterHeight + v0 * Math.sin(angle) * currentTime - 0.5 * g * currentTime * currentTime;
+            
+            // Calculate current velocity components
+            const vx = v0 * Math.cos(angle);
+            const vy = v0 * Math.sin(angle) - g * currentTime;
+            const currentVelocity = Math.sqrt(vx * vx + vy * vy);
+            
+            // Calculate theoretical values
+            const flightTime = (v0 * Math.sin(angle) + Math.sqrt((v0 * Math.sin(angle)) ** 2 + 2 * g * hunterHeight)) / g;
+            const maxHeight = hunterHeight + (v0 * v0 * Math.sin(angle) * Math.sin(angle)) / (2 * g);
+            
+            // Check if hit target
+            if (!hitTarget && x >= targetDistance - 0.5 && x <= targetDistance + 0.5) {
+                const targetY = hunterHeight + v0 * Math.sin(angle) * (targetDistance / (v0 * Math.cos(angle))) - 
+                               0.5 * g * Math.pow(targetDistance / (v0 * Math.cos(angle)), 2);
+                
+                if (targetY >= 0 && targetY <= animalProperties[selectedAnimal].size) {
+                    hitTarget = true;
+                    shotStatusElem.textContent = 'BERHASIL!';
+                    shotStatusElem.style.color = '#27ae60';
+                }
+            }
+            
+            // Add current point to trajectory
+            if (y >= 0) {
+                trajectoryPoints.push({x, y, time: currentTime});
+            }
+            
+            // Draw simulation
+            drawFrame(x, y, currentTime, flightTime, targetDistance);
+            
+            // Update results
+            if (y >= 0) {
+                updateResults(maxHeight, flightTime, currentVelocity);
+            } else {
+                // Projectile has hit the ground
+                isRunning = false;
+                startBtn.textContent = 'Tembak Sumpit!';
+                
+                if (!hitTarget) {
+                    shotStatusElem.textContent = 'GAGAL!';
+                    shotStatusElem.style.color = '#e74c3c';
+                }
+                
+                updateResults(maxHeight, flightTime, 0);
+                return;
+            }
+            
+            // Continue animation
+            animationId = requestAnimationFrame(animate);
+        }
+        
+        // Draw static elements (background, hunter, etc.)
+        function drawStaticElements() {
+            ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+            
+            // Draw white background
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+            
+            // Draw ground
+            ctx.fillStyle = '#8B4513';
+            ctx.fillRect(0, groundLevel, canvasWidth, 40);
+            
+            // Draw grass
+            ctx.fillStyle = '#2E8B57';
+            ctx.fillRect(0, groundLevel, canvasWidth, 5);
+            
+            // Draw distance markers every 5 meters
+            ctx.strokeStyle = '#666';
+            ctx.lineWidth = 1;
+            ctx.setLineDash([5, 3]);
+            ctx.fillStyle = '#333';
+            ctx.font = '12px Arial';
+            
+            for (let i = 0; i <= maxDistance; i += 5) {
+                const x = 50 + i * scaleX;
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, groundLevel);
+                ctx.stroke();
+                
+                // Add distance labels
+                ctx.fillText(i + ' m', x - 10, groundLevel + 15);
+            }
+            
+            ctx.setLineDash([]);
+            
+            // Draw hunter
+            drawHunter();
+            
+            // Draw target animal
+            drawAnimal();
+            
+            // Draw trajectory preview (if not running)
+            if (!isRunning) {
+                drawTrajectoryPreview();
+            }
+            
+            // Draw title
+            ctx.fillStyle = '#2c3e50';
+            ctx.font = '16px Arial';
+            ctx.fillText('Simulasi Berburu dengan Sumpit - Kalimantan Tengah', 10, 20);
+        }
+        
+        // Draw hunter with blowpipe
+        function drawHunter() {
+            const hunterX = 50;
+            const hunterY = groundLevel;
+            const hunterHeightPx = hunterHeight * scaleY;
+            
+            // Draw hunter body (shorter)
+            ctx.fillStyle = '#8B4513';
+            ctx.fillRect(hunterX - 10, hunterY - hunterHeightPx, 20, hunterHeightPx);
+            
+            // Draw hunter head
+            ctx.fillStyle = '#FFD700';
+            ctx.beginPath();
+            ctx.arc(hunterX, hunterY - hunterHeightPx - 10, 12, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Draw blowpipe
+            const angle = parseFloat(angleSlider.value) * Math.PI / 180;
+            const blowpipeLengthPx = blowpipeLength * scaleX;
+            
+            ctx.strokeStyle = '#654321';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            
+            // Start from hunter's mouth position (more realistic)
+            const mouthX = hunterX;
+            const mouthY = hunterY - hunterHeightPx + 15;
+            
+            ctx.moveTo(mouthX, mouthY);
+            ctx.lineTo(
+                mouthX + blowpipeLengthPx * Math.cos(angle),
+                mouthY - blowpipeLengthPx * Math.sin(angle)
+            );
+            ctx.stroke();
+        }
+        
+        // Draw target animal
+        function drawAnimal() {
+            const targetDistance = parseFloat(targetDistanceSlider.value);
+            const animalX = 50 + targetDistance * scaleX;
+            const animalY = groundLevel;
+            const animalSize = animalProperties[selectedAnimal].size * scaleY;
+            
+            ctx.fillStyle = animalProperties[selectedAnimal].color;
+            
+            if (selectedAnimal === 'rusa') {
+                // Draw deer
+                ctx.fillRect(animalX - 15, animalY - animalSize, 30, animalSize);
+                
+                // Draw deer antlers
+                ctx.strokeStyle = '#8B4513';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(animalX - 10, animalY - animalSize);
+                ctx.lineTo(animalX - 20, animalY - animalSize - 20);
+                ctx.lineTo(animalX - 5, animalY - animalSize - 15);
+                ctx.moveTo(animalX + 10, animalY - animalSize);
+                ctx.lineTo(animalX + 20, animalY - animalSize - 20);
+                ctx.lineTo(animalX + 5, animalY - animalSize - 15);
+                ctx.stroke();
+            } else if (selectedAnimal === 'babi') {
+                // Draw wild boar
+                ctx.beginPath();
+                ctx.ellipse(animalX, animalY - animalSize/2, 20, animalSize/2, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Draw boar snout
+                ctx.fillRect(animalX + 15, animalY - animalSize/2 - 5, 15, 10);
+            } else {
+                // Draw monkey
+                ctx.beginPath();
+                ctx.arc(animalX, animalY - animalSize/2, animalSize/2, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Draw monkey tail
+                ctx.strokeStyle = '#A0522D';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(animalX + animalSize/2, animalY - animalSize/2);
+                ctx.quadraticCurveTo(animalX + animalSize, animalY - animalSize, animalX + animalSize/2, animalY);
+                ctx.stroke();
+            }
+        }
+        
+        // Draw trajectory preview
+        function drawTrajectoryPreview() {
+            const v0 = parseFloat(velocitySlider.value);
+            const angle = parseFloat(angleSlider.value) * Math.PI / 180;
+            const g = 9.8;
+            
+            // Calculate flight time and max distance
+            const flightTime = (v0 * Math.sin(angle) + Math.sqrt((v0 * Math.sin(angle)) ** 2 + 2 * g * hunterHeight)) / g;
+            const maxDistance = v0 * Math.cos(angle) * flightTime;
+            
+            // Draw trajectory curve
+            ctx.strokeStyle = 'rgba(52, 152, 219, 0.5)';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([5, 5]);
+            ctx.beginPath();
+            
+            for (let t = 0; t <= flightTime; t += 0.1) {
+                const x = v0 * Math.cos(angle) * t;
+                const y = hunterHeight + v0 * Math.sin(angle) * t - 0.5 * g * t * t;
+                
+                if (y >= 0) {
+                    const scaledX = 50 + x * scaleX;
+                    const scaledY = groundLevel - (y * scaleY);
+                    
+                    if (t === 0) {
+                        ctx.moveTo(scaledX, scaledY);
+                    } else {
+                        ctx.lineTo(scaledX, scaledY);
+                    }
+                }
+            }
+            
+            ctx.stroke();
+            ctx.setLineDash([]);
+        }
+        
+        // Draw a single frame of the simulation
+        function drawFrame(x, y, time, flightTime, targetDistance) {
+            drawStaticElements();
+            
+            // Scale coordinates to fit canvas
+            const scaledX = 50 + x * scaleX;
+            const scaledY = groundLevel - (y * scaleY);
+            
+            // Draw trajectory with smooth curve
+            if (trajectoryPoints.length > 1) {
+                ctx.strokeStyle = '#3498db';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                
+                // Start from hunter's mouth position
+                const mouthX = 50;
+                const mouthY = groundLevel - (hunterHeight * scaleY) + 15;
+                ctx.moveTo(mouthX, mouthY);
+                
+                // Draw smooth curve through all trajectory points
+                for (let i = 0; i < trajectoryPoints.length; i++) {
+                    const point = trajectoryPoints[i];
+                    const pointX = 50 + point.x * scaleX;
+                    const pointY = groundLevel - (point.y * scaleY);
+                    
+                    ctx.lineTo(pointX, pointY);
+                }
+                
+                ctx.stroke();
+            }
+            
+            // Draw dart (child sumpit)
+            drawDart(scaledX, scaledY, time);
+            
+            // Draw info box
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+            ctx.fillRect(10, 30, 220, 100);
+            ctx.strokeStyle = '#3498db';
+            ctx.lineWidth = 1;
+            ctx.strokeRect(10, 30, 220, 100);
+            
+            ctx.fillStyle = '#2c3e50';
+            ctx.font = '12px Arial';
+            ctx.fillText(`Waktu: ${time.toFixed(2)} s`, 20, 50);
+            ctx.fillText(`Posisi X: ${x.toFixed(2)} m`, 20, 70);
+            ctx.fillText(`Posisi Y: ${y.toFixed(2)} m`, 20, 90);
+            ctx.fillText(`Jarak Target: ${targetDistance} m`, 20, 110);
+            
+            // Draw hit effect if target was hit
+            if (hitTarget) {
+                const animalX = 50 + targetDistance * scaleX;
+                const animalSize = animalProperties[selectedAnimal].size * scaleY;
+                
+                ctx.fillStyle = 'rgba(231, 76, 60, 0.5)';
+                ctx.beginPath();
+                ctx.arc(animalX, groundLevel - animalSize/2, 30, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.fillStyle = '#e74c3c';
+                ctx.font = 'bold 20px Arial';
+                ctx.fillText('BERHASIL!', animalX - 40, groundLevel - animalSize - 20);
+            }
+        }
+        
+        // Draw dart (child sumpit) with proper orientation
+        function drawDart(scaledX, scaledY, time) {
+            const v0 = parseFloat(velocitySlider.value);
+            const angle = parseFloat(angleSlider.value) * Math.PI / 180;
+            const g = 9.8;
+            
+            // Calculate current velocity components
+            const vx = v0 * Math.cos(angle);
+            const vy = v0 * Math.sin(angle) - g * time;
+            
+            // Calculate dart angle based on velocity vector
+            const dartAngle = Math.atan2(vy, vx);
+            
+            // Draw dart body
+            ctx.strokeStyle = '#e74c3c';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(scaledX, scaledY);
+            ctx.lineTo(
+                scaledX - 15 * Math.cos(dartAngle),
+                scaledY - 15 * Math.sin(dartAngle)
+            );
+            ctx.stroke();
+            
+            // Draw dart head
+            ctx.fillStyle = '#e74c3c';
+            ctx.beginPath();
+            ctx.moveTo(scaledX, scaledY);
+            ctx.lineTo(
+                scaledX - 5 * Math.cos(dartAngle - 0.3),
+                scaledY - 5 * Math.sin(dartAngle - 0.3)
+            );
+            ctx.lineTo(
+                scaledX - 5 * Math.cos(dartAngle + 0.3),
+                scaledY - 5 * Math.sin(dartAngle + 0.3)
+            );
+            ctx.closePath();
+            ctx.fill();
+        }
+        
+        // Update results display
+        function updateResults(height, time, velocity) {
+            maxHeightElem.textContent = height.toFixed(2) + ' m';
+            flightTimeElem.textContent = time.toFixed(2) + ' s';
+            
+            if (velocity === '-') {
+                currentVelocityElem.textContent = '-';
+                shotStatusElem.textContent = '-';
+                shotStatusElem.style.color = '#2c3e50';
+            } else {
+                currentVelocityElem.textContent = velocity.toFixed(2) + ' m/s';
+            }
+        }
+        
+        // Initialize the simulation
+        initSimulation();
+    </script>
+</body>
+</html>
